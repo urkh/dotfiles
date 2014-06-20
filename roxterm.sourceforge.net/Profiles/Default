@@ -1,0 +1,12 @@
+[roxterm profile]
+font=Monaco 9
+hide_menubar=1
+show_resize_grip=0
+always_show_tabs=0
+background_type=2
+saturation=0.990000
+audible_bell=0
+scrollbar_pos=0
+show_tab_num=0
+tab_pos=4
+scroll_background=1
