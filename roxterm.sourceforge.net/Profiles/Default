@@ -1,5 +1,5 @@
 [roxterm profile]
-font=Monaco 9
+font=Inconsolata for Powerline Medium 12
 hide_menubar=1
 show_resize_grip=0
 always_show_tabs=0
@@ -10,3 +10,4 @@ scrollbar_pos=0
 show_tab_num=0
 tab_pos=4
 scroll_background=1
+width=90
