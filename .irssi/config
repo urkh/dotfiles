@@ -97,7 +97,11 @@ chatnets = {
     max_whois = "30";
   };
   SILC = { type = "SILC"; };
-  freenode = { type = "IRC"; };
+  freenode = { 
+    type = "IRC"; 
+    nick = "nick";
+    autosendcmd = "/msg nickserv identify <pass>;wait 2000"
+  };
 };
 
 channels = (
