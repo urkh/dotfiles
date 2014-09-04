@@ -274,6 +274,6 @@ settings = {
   core = { real_name = "urkh"; user_name = "urkh"; nick = "urkh"; };
   "fe-text" = { actlist_sort = "refnum"; };
   "irc/core" = { alternate_nick = "_urkh_"; };
-  "fe-common/core" = { theme = "xchat2.theme"; };
+  "fe-common/core" = { theme = "sputnik.theme"; };
 };
 

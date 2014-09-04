@@ -2,16 +2,16 @@
 require("awful")
 require("awful.autofocus")
 require("awful.rules")
+
 -- Theme handling library
 require("beautiful")
+
 -- Notification library
 require("naughty")
---awful.util.spawn_with_shell("xcompmgr -cF &")
--- Load Debian menu entries
---require("debian.menu")
 
-
---awful.util.spawn_with_shell("nm-applet --sm-disable &")
+--awful.util.spawn_with_shell("xcompmgr &")
+awful.util.spawn_with_shell("nm-applet --sm-disable &")
+vicious = require("vicious")
 
 
 -- {{{ Error handling
@@ -41,10 +41,11 @@ end
 
 -- {{{ Variable definitions
 -- Themes define colours, icons, and wallpapers
-beautiful.init("/home/urkh/.config/awesome/themes/nice/theme.lua")
+--beautiful.init("/usr/share/awesome/themes/default/theme.lua")
+beautiful.init("/home/urkh/.config/awesome/themes/dust/theme.lua")
 
 -- This is used later as the default terminal and editor to run.
-terminal = "sakura"
+terminal = "roxterm"
 editor = os.getenv("EDITOR") or "vim"
 editor_cmd = terminal .. " -e " .. editor
 
@@ -78,9 +79,146 @@ layouts =
 tags = {}
 for s = 1, screen.count() do
     -- Each screen has its own tag table.
-    tags[s] = awful.tag({ 1, 2, 3, 4}, s, layouts[6])
+    tags[s] = awful.tag({ "rand", "dev", "web", "py", "jdk"}, s, layouts[1])
 end
 -- }}}
+
+
+
+
+
+
+
+
+-- RAM usage widget
+memwidget = awful.widget.progressbar()
+memwidget:set_width(15)
+memwidget:set_height(30)
+memwidget:set_vertical(true)
+memwidget:set_background_color('#494B4F')
+memwidget:set_color('#AECF96')
+memwidget:set_gradient_colors({ '#AECF96', '#88A175', '#FF5656' })
+
+-- RAM usage tooltip
+memwidget_t = awful.tooltip({ objects = { memwidget.widget },})
+
+vicious.cache(vicious.widgets.mem)
+vicious.register(memwidget, vicious.widgets.mem,
+                function (widget, args)
+                    memwidget_t:set_text(" RAM: " .. args[2] .. "MB / " .. args[3] .. "MB ")
+                    return args[1]
+                 end, 13)
+                 --update every 13 seconds
+
+
+
+
+
+  batwidget = awful.widget.progressbar()
+  batwidget:set_width(12)
+  batwidget:set_height(14)
+  batwidget:set_vertical(true)
+  batwidget:set_background_color("#494B4F")
+  batwidget:set_border_color(nil)
+  batwidget:set_color("#AECF96")
+  batwidget:set_gradient_colors({ "#AECF96", "#88A175", "#FF5656" })
+  vicious.register(batwidget, vicious.widgets.bat, "$2                  ", 61, "BAT1")
+
+-- CPU
+
+-- CPU usage widget
+cpuwidget = awful.widget.graph()
+cpuwidget:set_width(50)
+cpuwidget:set_height(30)
+cpuwidget:set_background_color("#494B4F")
+cpuwidget:set_color("#FF5656")
+cpuwidget:set_gradient_colors({ "#FF5656", "#88A175", "#AECF96" })
+
+cpuwidget_t = awful.tooltip({ objects = { cpuwidget.widget },})
+
+-- Register CPU widget
+vicious.register(cpuwidget, vicious.widgets.cpu, 
+                    function (widget, args)
+                        cpuwidget_t:set_text("CPU Usage: " .. args[1] .. "%")
+                        return args[1]
+                    end)
+
+
+
+-- Network widget
+netwidget = awful.widget.graph()
+netwidget:set_width(50)
+netwidget:set_height(30)
+netwidget:set_background_color("#494B4F")
+netwidget:set_color("#FF5656")
+netwidget:set_gradient_colors({ "#FF5656", "#88A175", "#AECF96" })
+
+netwidget_t = awful.tooltip({ objects = { netwidget.widget },})
+
+-- Register network widget
+vicious.register(netwidget, vicious.widgets.net,
+                    function (widget, args)
+                        netwidget_t:set_text("Network download: " .. args["{eth0 down_mb}"] .. "mb/s")
+                        return args["{eth0 down_mb}"]
+                    end)
+
+
+
+
+-- Volume widget
+
+volumecfg = {}
+volumecfg.cardid  = 0
+volumecfg.channel = "Master"
+volumecfg.widget = widget({ type = "textbox", name = "volumecfg.widget", align = "right" })
+
+volumecfg_t = awful.tooltip({ objects = { volumecfg.widget },})
+volumecfg_t:set_text("Volume")
+
+-- command must start with a space!
+volumecfg.mixercommand = function (command)
+       local fd = io.popen("amixer -c " .. volumecfg.cardid .. command)
+       local status = fd:read("*all")
+       fd:close()
+
+       local volume = string.match(status, "(%d?%d?%d)%%")
+       volume = string.format("% 3d", volume)
+       status = string.match(status, "%[(o[^%]]*)%]")
+       if string.find(status, "on", 1, true) then
+               volume = volume .. "%"
+       else
+               volume = volume .. "M"
+       end
+       volumecfg.widget.text = volume
+end
+volumecfg.update = function ()
+       volumecfg.mixercommand(" sget " .. volumecfg.channel)
+end
+volumecfg.up = function ()
+       volumecfg.mixercommand(" sset " .. volumecfg.channel .. " 1%+")
+end
+volumecfg.down = function ()
+       volumecfg.mixercommand(" sset " .. volumecfg.channel .. " 1%-")
+end
+volumecfg.toggle = function ()
+       volumecfg.mixercommand(" sset " .. volumecfg.channel .. " toggle")
+end
+volumecfg.widget:buttons({
+       button({ }, 4, function () volumecfg.up() end),
+       button({ }, 5, function () volumecfg.down() end),
+       button({ }, 1, function () volumecfg.toggle() end)
+})
+volumecfg.update()
+
+
+
+
+
+
+
+
+
+
 
 -- {{{ Menu
 -- Create a laucher widget and a main menu
@@ -92,7 +230,6 @@ myawesomemenu = {
 }
 
 mymainmenu = awful.menu({ items = { { "awesome", myawesomemenu, beautiful.awesome_icon },
-                                    { "Debian", debian.menu.Debian_menu.Debian },
                                     { "open terminal", terminal }
                                   }
                         })
@@ -180,14 +317,19 @@ for s = 1, screen.count() do
             mylauncher,
             mytaglist[s],
             mypromptbox[s],
+
             layout = awful.widget.layout.horizontal.leftright
         },
         mylayoutbox[s],
         mytextclock,
+    --    baticon, space, battbar, separator,
+	--    volicon, space, volwidget, separator,
         s == 1 and mysystray or nil,
         mytasklist[s],
         layout = awful.widget.layout.horizontal.rightleft
     }
+
+
 end
 -- }}}
 
@@ -201,8 +343,8 @@ root.buttons(awful.util.table.join(
 
 -- {{{ Key bindings
 globalkeys = awful.util.table.join(
-    awful.key({ modkey,           }, "Left",   awful.tag.viewprev       ),
-    awful.key({ modkey,           }, "Right",  awful.tag.viewnext       ),
+    awful.key({ modkey, "Shift"}, "Left",   awful.tag.viewprev       ),
+    awful.key({ modkey, "Shift"}, "Right",  awful.tag.viewnext       ),
     awful.key({ modkey,           }, "Escape", awful.tag.history.restore),
 
     awful.key({ modkey,           }, "Next",
@@ -215,32 +357,23 @@ globalkeys = awful.util.table.join(
             awful.client.focus.byidx(-1)
             if client.focus then client.focus:raise() end
         end),
---    awful.key({ modkey,           }, "w", function () mymainmenu:show({keygrabber=true}) end),
+    -- awful.key({ modkey,           }, "w", function () mymainmenu:show({keygrabber=true}) end),
 
 
     awful.key({ modkey  }, "s",
-         function ()
-          awful.util.spawn("gksudo pm-suspend -m " ..
-                       "'Suspendiendo el equipo...'")
-	 end),
-
-
-    awful.key({ modkey, "Shift"   }, "a",
-         function ()
-	         awful.util.spawn("gksu shutdown -h now " ..
-                              "'Apagando el equipo...'")
-         end),
- 
-    awful.key({ }, "Print", 
-        function () 
-            awful.util.spawn("scrot -e 'mv $f ~/screenshots/ 2>/dev/null'") 
+        function ()
+            awful.util.spawn("gksudo pm-suspend -m " ..
+                             "'Suspendiendo el equipo...'")
         end),
 
 
+   --awful.key({ modkey, "Shift"   }, "a",
+   --     function ()
+   --         awful.util.spawn("gksu shutdown -h now " ..
+   --                          "'Apagando el equipo...'")
+   --     end),
 
-
-
-
+   awful.key({ }, "Print", function () awful.util.spawn("scrot -e 'mv $f ~/screenshots/ 2>/dev/null'") end),
 
 
     -- Layout manipulation
@@ -256,6 +389,33 @@ globalkeys = awful.util.table.join(
                 client.focus:raise()
             end
         end),
+
+
+
+
+    -- Move to screen
+    --
+    --
+    --
+    --
+        awful.key({modkey,            }, "Left",     
+                  function () 
+                      awful.screen.focus(2) 
+                  end
+        ),
+
+
+
+        awful.key({modkey,            }, "Right",     
+                  function () 
+                      awful.screen.focus(1) 
+                  end
+        ),
+
+
+
+
+
 
     -- Standard program
     awful.key({ modkey,           }, "Return", function () awful.util.spawn(terminal) end),
@@ -317,6 +477,10 @@ end
 -- This should map on the top row of your keyboard, usually 1 to 9.
 for i = 1, keynumber do
     globalkeys = awful.util.table.join(globalkeys,
+
+
+
+
         awful.key({ modkey }, "#" .. i + 9,
                   function ()
                         local screen = mouse.screen
