@@ -1,0 +1,35 @@
+alias term exec xterm
+escape Super_L 
+
+#Trayer
+unmanage panel
+set padding 0 0 0 26
+exec trayer --align right --edge bottom --distance 0 --expand true --transparent true --alpha 128 --tint 0 --SetDockType true --SetPartialStrut true
+exec nm-applet
+exec numlockx
+exec tilda
+
+
+alias showroot exec ratpoison -c fdump; ratpoison -c 'select -' -c only
+alias unshowroot exec ratpoison -c "frestore at $HOME/.rpfdump"
+
+## Para mostrar el escritorio
+bind B showroot
+
+### Escritorios virtuales
+exec rpws -i
+exec /usr/bin/rpws init 6 -k
+
+# "toggle between two frames"
+bind C-Tab focuslast
+
+### Atajos de teclas
+bind f exec google-chrome
+bind o exec odeskteam-qt4
+bind c exec xterm
+bind l exec xtrlock
+bind C-Up exec amixer set Master 5%+
+bind C-Down exec amixer set Master 5%-
+
+# Para hacer un screenshot:
+definekey top Print exec xterm -e scrot
