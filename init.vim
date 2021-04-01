@@ -50,8 +50,13 @@ Plug 'ncm2/ncm2-path'
 " Formater
 Plug 'Chiel92/vim-autoformat'
 
+Plug 'samoshkin/vim-mergetool'
+
 " finder
-Plug '/usr/bin/fzf'
+"Plug '/usr/local/bin/fzf'
+" Plug 'junegunn/fzf.vim'
+" Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
+Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
 Plug 'junegunn/fzf.vim'
 
 " Lang supports
@@ -65,6 +70,7 @@ Plug 'junegunn/gv.vim'
 Plug 'ludovicchabant/vim-gutentags'
 " Plug 'kassio/neoterm'
 " Plug 'alfredodeza/pytest.vim'
+Plug 'APZelos/blamer.nvim'
 
 " Initialize plugin system
 call plug#end()
@@ -83,8 +89,10 @@ let g:jedi#show_call_signatures = "1"
 
 
 " Mostrar mejor mensajes de error
-let g:ale_echo_msg_error_str = 'E'
-let g:ale_echo_msg_warning_str = 'W'
+" let g:ale_echo_msg_error_str = 'E'
+" let g:ale_echo_msg_warning_str = 'W'
+let g:ale_sign_error = '✘'
+let g:ale_sign_warning = '⚠'
 let g:ale_echo_msg_format = '[%linter%] %s [%severity%]'
 let g:ale_linters = {
 \   'python': ['flake8'],
@@ -186,10 +194,13 @@ inoremap <C-k> <C-o>k
 autocmd FileType vue syntax sync fromstart
 autocmd FileType vue setlocal ts=2 sts=2 sw=2
 autocmd FileType javascript setlocal ts=2 sts=2 sw=2
+autocmd FileType yaml setlocal ts=2 sts=2 sw=2
 
 
 " update files for external modifications 
-autocmd FocusGained * silent! checktime
+" autocmd FocusGained * silent! checktime
+" au FocusGained * :checktime
+au FocusGained,BufEnter * :silent! checktime
 
 " split term
 " set splitbelow
@@ -212,6 +223,19 @@ let NERDTreeIgnore=['\.pyc$', '\~$'] " Ignore irrelevant files like pyc and swap
 
 " set rtp+=/usr/bin/fzf
 "
+"
+" The Silver Searcher
+" if executable('ag')
+"   set grepprg=ag\ --nogroup\ --nocolor
+"  let g:ctrlp_user_command = 'ag %s -l --nocolor -g ""'
+"    let g:ctrlp_use_caching = 0
+" endif
+
+" bind K to grep word under cursor
+" nnoremap K :grep! "\b<C-R><C-W>\b"<CR>:cw<CR>
+
+" bind \ (backward slash) to grep shortcut
+" command -nargs=+ -complete=file -bar Ag silent! grep! <args>|cwindow|redraw!
 
 
 
@@ -286,3 +310,19 @@ endfunction
 
 let g:rainbow_active = 1
 autocmd Filetype json :IndentLinesDisable
+
+
+" mergetool
+let g:mergetool_layout = 'bmr'
+let g:mergetool_prefer_revision = 'local'
+
+nmap <expr> <C-Left> &diff? '<Plug>(MergetoolDiffExchangeLeft)' : '<C-Left>'
+nmap <expr> <C-Right> &diff? '<Plug>(MergetoolDiffExchangeRight)' : '<C-Right>'
+nmap <expr> <C-Down> &diff? '<Plug>(MergetoolDiffExchangeDown)' : '<C-Down>'
+nmap <expr> <C-Up> &diff? '<Plug>(MergetoolDiffExchangeUp)' : '<C-Up>'
+
+
+let g:blamer_enabled = 1
+let g:blamer_delay = 500
+let g:blamer_show_in_insert_modes = 0
+let g:blamer_show_in_visual_modes = 0
