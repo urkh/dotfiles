@@ -1,3 +1,5 @@
+require('plugins')
+
 vim.opt.showmatch = true
 vim.opt.number = true
 vim.opt.expandtab = true
@@ -14,84 +16,34 @@ vim.opt.colorcolumn = '120'
 vim.opt.signcolumn = 'yes'
 vim.opt.termguicolors = true
 
--- vim.g.mapleader = ' '
-
-require('packer').startup(function(use)
-    use 'wbthomason/packer.nvim'
-
-    -- utils
-    use 'rktjmp/lush.nvim'
-    use 'nvim-tree/nvim-tree.lua'
-    use 'Vimjas/vim-python-pep8-indent'
-    use 'dense-analysis/ale'
-
-    use 'nvim-tree/nvim-web-devicons'
-    use 'joshdick/onedark.vim'
-    use 'uloco/bluloco.nvim'
-    use 'nvim-lualine/lualine.nvim'
-    use 'bluz71/vim-nightfly-colors'
-    use 'bluz71/vim-moonfly-colors'
-    -- use { 'junegunn/fzf', run = './install --all' }
-    -- use { 'junegunn/fzf.vim' }
-    use {
-        'ibhagwan/fzf-lua',
-         run = './install --bin'
-    }
-
-    -- LSP
-    use {
-        'VonHeikemen/lsp-zero.nvim',
-        requires = {
-          {'neovim/nvim-lspconfig'},
-          {'williamboman/mason.nvim'},
-          {'williamboman/mason-lspconfig.nvim'},
-
-          {'hrsh7th/nvim-cmp'},
-          {'hrsh7th/cmp-buffer'},
-          {'hrsh7th/cmp-path'},
-          {'saadparwaiz1/cmp_luasnip'},
-          {'hrsh7th/cmp-nvim-lsp'},
-          {'hrsh7th/cmp-nvim-lua'},
-
-          {'L3MON4D3/LuaSnip'},
-          {'rafamadriz/friendly-snippets'},
-        }
-    }
-    use 'lewis6991/gitsigns.nvim'
-    use 'voldikss/vim-floaterm'
+-- vim.cmd('colorscheme nightfly')
+-- vim.cmd('colorscheme catppuccin-frappe')
+vim.cmd('colorscheme catppuccin-latte')
+-- vim.cmd('colorscheme rose-pine-dawn')
+-- vim.cmd('colorscheme rusticated')
+-- vim.cmd('colorscheme edge-light')
 
 
+local lsp_zero = require('lsp-zero')
+
+lsp_zero.on_attach(function(client, bufnr)
+  -- see :help lsp-zero-keybindings
+  -- to learn the available actions
+  lsp_zero.default_keymaps({buffer = bufnr})
 end)
 
-vim.cmd('colorscheme nightfly')
-
-require('lualine').setup {
-  options = {
-    theme = 'auto'
-  }
-}
-
-
-local lsp = require('lsp-zero')
--- lsp.preset('recommended')
-lsp.set_preferences({
-  suggest_lsp_servers = true,
-  setup_servers_on_start = true,
-  set_lsp_keymaps = true,
-  configure_diagnostics = true,
-  cmp_capabilities = true,
-  manage_nvim_cmp = true,
-  call_servers = 'local',
-  sign_icons = {
-    error = '✘',
-    warn = '▲',
-    hint = '⚑',
-    info = 'ⓘ'
-  }
+-- to learn how to use mason.nvim
+-- read this: https://github.com/VonHeikemen/lsp-zero.nvim/blob/v3.x/doc/md/guide/integrate-with-mason-nvim.md
+require('mason').setup({})
+require('mason-lspconfig').setup({
+  ensure_installed = {'pyright', 'vuels', 'tsserver'},
+  handlers = {
+    function(server_name)
+      require('lspconfig')[server_name].setup({})
+    end,
+  },
 })
 
-lsp.nvim_workspace()
-lsp.setup()
 
 require('gitsigns').setup {
     signs = {
@@ -121,9 +73,10 @@ require('gitsigns').setup {
     current_line_blame_formatter = '<author>, <author_time:%Y-%m-%d> - <summary>',
     sign_priority = 6,
     update_debounce = 100,
-    status_formatter = nil,
+    status_formatter = nil, -- Use default
     max_file_length = 40000, -- Disable if file is longer than this (in lines)
     preview_config = {
+        -- Options passed to nvim_open_win
         border = 'single',
         style = 'minimal',
         relative = 'cursor',
@@ -196,3 +149,14 @@ vim.g.ale_virtualtext_cursor = 0
 vim.g.ale_lint_on_text_changed = 'never'
 
 vim.keymap.set('n', '<c-P>', '<cmd>lua require("fzf-lua").files()<CR>', { silent = true })
+
+
+require('lualine').setup()
+
+local bufferline = require('bufferline')
+bufferline.setup({
+    options = {
+        mode = 'tabs',
+        style_preset = bufferline.style_preset.no_italic,
+    }
+})
