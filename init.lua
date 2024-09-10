@@ -16,16 +16,8 @@ vim.opt.colorcolumn = '120'
 vim.opt.signcolumn = 'yes'
 vim.opt.termguicolors = true
 
--- vim.cmd('colorscheme nightfly')
--- vim.cmd('colorscheme catppuccin-latte')
--- vim.cmd('colorscheme rose-pine-dawn')
--- vim.cmd('colorscheme rusticated')
--- vim.cmd('colorscheme edge-light')
-
+-- theme
 vim.cmd('colorscheme catppuccin-frappe')
-
--- file explorer
-
 
 -- float term
 vim.g.floaterm_title = '$1|$2'
@@ -65,7 +57,7 @@ end)
 
 require('mason').setup({})
 require('mason-lspconfig').setup({
-  ensure_installed = {'pyright', 'vuels', 'tsserver'},
+  ensure_installed = {'pyright', 'vuels'},
   handlers = {
     function(server_name)
       require('lspconfig')[server_name].setup({})
@@ -111,9 +103,9 @@ require('gitsigns').setup {
         row = 0,
         col = 1
     },
-    yadm = {
-        enable = false
-    },
+    -- yadm = {
+    --     enable = false
+    -- },
 }
 
 
@@ -145,6 +137,8 @@ require('nvim-tree').setup({
 
 vim.keymap.set('n', '<Leader><Tab>', ':NvimTreeToggle<CR>', {remap = true})
 
+
+-- buffer line
 local lualine = require('lualine')
 lualine.setup({
     sections = {
@@ -152,7 +146,7 @@ lualine.setup({
             {
               'filename',
               file_status = true,
-              path = 1
+              path = 1 -- 0 = filename, 1 = relative path, 2 = absolute path
             }
         }
     }
