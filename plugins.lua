@@ -41,27 +41,22 @@ packer.init({
 -- Install your plugins here
 return packer.startup(function(use)
 	use ("wbthomason/packer.nvim") -- Have packer manage itself	
-    use 'rktjmp/lush.nvim'
+    use 'rktjmp/lush.nvim'  -- theme
+    use 'catppuccin/nvim'
     use 'nvim-tree/nvim-tree.lua'
+
     use 'Vimjas/vim-python-pep8-indent'
     use 'dense-analysis/ale'
 
     use 'nvim-tree/nvim-web-devicons'
-    use 'joshdick/onedark.vim'
-    use 'uloco/bluloco.nvim'
     use 'nvim-lualine/lualine.nvim'
     use 'akinsho/bufferline.nvim'
-    use 'bluz71/vim-nightfly-colors'
-    use 'bluz71/vim-moonfly-colors'
     use { "ibhagwan/fzf-lua",
       requires = { "nvim-tree/nvim-web-devicons" }
     }
-    use 'LunarVim/lunar.nvim'
+
     use 'lewis6991/gitsigns.nvim'
     use 'voldikss/vim-floaterm'
-    use { "catppuccin/nvim", as = "catppuccin" }
-    use { 'rose-pine/neovim', as = 'rose-pine'}
-    use { 'd00h/nvim-rusticated', as = 'rusticated' }
 
     use {
       'VonHeikemen/lsp-zero.nvim',
@@ -80,9 +75,7 @@ return packer.startup(function(use)
         {'rafamadriz/friendly-snippets'},
       }
     }
-
-
-
+    
 	if PACKER_BOOTSTRAP then
 		require("packer").sync()
 	end
