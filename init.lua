@@ -21,7 +21,11 @@ vim.opt.termguicolors = true
 -- vim.cmd('colorscheme rose-pine-dawn')
 -- vim.cmd('colorscheme rusticated')
 -- vim.cmd('colorscheme edge-light')
+
 vim.cmd('colorscheme catppuccin-frappe')
+
+-- file explorer
+
 
 -- float term
 vim.g.floaterm_title = '$1|$2'
@@ -112,6 +116,7 @@ require('gitsigns').setup {
     },
 }
 
+
 -- File explorer
 local function on_attach(bufnr)
   local api = require 'nvim-tree.api'
@@ -140,8 +145,19 @@ require('nvim-tree').setup({
 
 vim.keymap.set('n', '<Leader><Tab>', ':NvimTreeToggle<CR>', {remap = true})
 
--- bufferline
-require('lualine').setup()
+local lualine = require('lualine')
+lualine.setup({
+    sections = {
+        lualine_c = {
+            {
+              'filename',
+              file_status = true,
+              path = 1
+            }
+        }
+    }
+})
+
 local bufferline = require('bufferline')
 bufferline.setup({
     options = {
